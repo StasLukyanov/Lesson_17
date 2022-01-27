@@ -1,9 +1,9 @@
 package com.example.lesson_17
 
+import android.content.Context
+import android.os.*
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.SystemClock
 import android.view.View
 import android.widget.Button
 import android.widget.Chronometer
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.apply {
             btnStart.setOnClickListener {
-                startCountDownTimer((edTimer.text.toString().toLong()+1) * 1000)
+                startCountDownTimer((edTimer.text.toString().toLong() + 1) * 1000)
                 binding.tvTimer.text = ""
                 binding.checkBox.isChecked = false
                 binding.checkBox.visibility = View.GONE
@@ -48,6 +48,9 @@ class MainActivity : AppCompatActivity() {
                 binding.btnReset.text = "Reset"
                 binding.checkBox.isChecked = false
                 binding.checkBox.visibility = View.GONE
+                vibro(this)
+                Toast.makeText(this,"Таймер аля уля!",Toast.LENGTH_LONG).show()
+                Log.d("MyLog","вибрацияяяЯЯЯ!!")
             }
         }
     }
@@ -62,8 +65,33 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 binding.tvTimer.text = "Finish"
+                vibro(this@MainActivity)
             }
 
         }.start()
+    }
+
+    companion object {
+        fun vibro(context: Context) {
+            // Kotlin
+            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            val canVibrate: Boolean = vibrator.hasVibrator()
+            val milliseconds = 1000L
+
+            if (canVibrate) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    // API 26
+                    vibrator.vibrate(
+                        VibrationEffect.createOneShot(
+                            milliseconds,
+                            VibrationEffect.DEFAULT_AMPLITUDE
+                        )
+                    )
+                } else {
+                    // This method was deprecated in API level 26
+                    vibrator.vibrate(milliseconds)
+                }
+            }
+        }
     }
 }
